@@ -1,6 +1,6 @@
-# korean-covid-19-remaining-vaccine-for-dummies
+# korea-covid-19-remaining-vaccine-for-dummies
 
-[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fkorky-buchek%2Fkorean-covid-19-remaining-vaccine-for-dummies&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fkorky-buchek%2Fkorea-covid-19-remaining-vaccine-for-dummies&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
 
 
 컴맹들을 위합니다.
