@@ -6,6 +6,12 @@
 컴맹들을 위합니다.
 [원본 프로젝트](https://github.com/SJang1/korea-covid-19-remaining-vaccine-macro) 의 Node.js + Electron 구현입니다.
 
+## 원본 프로젝트와의 차이점
+1. GUI가 있습니다 (!)
+2. Chrome을 설치하거나 Chrome의 Profile을 맞출 필요가 없습니다. Electron에 Chromium이 포함되어있기 때문입니다.
+3. 개발자 도구(DevTools)의 사용이 필요없습니다.
+
+
 ## how-to-use
 !! 모바일 카카오톡에서 먼저 잔여백신 신청 약관 동의를 하셔야합니다.
 1. 로그인
