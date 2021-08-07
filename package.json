@@ -1,0 +1,51 @@
+{
+  "name": "korean-covid-19-remaining-vaccine-for-dummies",
+  "version": "1.0.1",
+  "description": "korean-covid-19-remaining-vaccine-for-dummies",
+  "main": "build/index.js",
+  "scripts": {
+    "transpile": "tsc --build --clean && tsc --build --verbose",
+    "start-win": "npm run transpile && cross-env ELECTRON_ENV=development electron build/index.js",
+    "build-win": "npm run transpile && npx electron-builder",
+    "start-mac": "npm run transpile && cross-env ELECTRON_ENV=development electron build/index.js",
+    "build-mac": "npm run transpile && npx electron-builder"
+  },
+  "repository": {
+    "type": "git",
+    "build": "https://github.com/korky-buchek/korean-covid-19-remaining-vaccine-for-dummies"
+  },
+  "author": "b4sscrusher",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "electron": "^13.1.8"
+  },
+  "dependencies": {
+    "@types/node": "^16.4.12",
+    "@types/sound-play": "^1.1.0",
+    "axios": "^0.21.1",
+    "cross-env": "^7.0.3",
+    "dotenv": "^10.0.0",
+    "electron-is-dev": "^2.0.0",
+    "sound-play": "^1.1.0"
+  },
+  "build": {
+    "productName": "korean-covid-19-remaining-vaccine-for-dummies.js",
+    "appId": "com.b4ss.rvfordummies",
+    "asar": true,
+    "files": [
+      "build/**/*"
+    ],
+    "win": {
+      "target": [
+        "portable"
+      ]
+    },
+    "extraResources": [
+      "static/*",
+      "assets/*",
+      "build/utils/popup.js",
+      "build/utils/preload.js",
+      "build/utils/reservation_preload.js"
+    ]
+  }
+}

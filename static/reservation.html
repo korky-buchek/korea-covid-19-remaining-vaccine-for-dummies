@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+    <style type='text/css'>
+        #topdiv{
+            height: 30%;
+        }
+        #bottomdiv{
+            height: 495px;
+            overflow: scroll;
+            border: 2px solid rgb(128, 122, 122);
+            font-size: small;
+            line-height: 0.4rem;
+            padding: 1px 1px 1px 1px;
+            margin : 1px 1px 1px 1px;
+        }
+        body {
+            background-color: white;
+            font-weight : bold;
+        }
+        table{
+            text-align: center;
+        }
+        th{
+            font-size: large;
+            font-weight: 900;
+        }
+        td{
+            font-size: medium;
+        }
+        p{
+            font-weight: bold;
+        }
+        #console {
+            width : 770px;
+            height: 485px;
+        }
+        .error{
+            color: red;
+        }
+        .event{
+            color:blueviolet
+        }
+        #cpBtn{
+            position: relative;
+            left: 700px;
+        }
+    </style>
+    <script>
+        function copyLog(){
+            navigator.clipboard.writeText(document.getElementById("bottomdiv").innerText)
+        }
+    </script>
+</head>
+<body>
+    <div id="topdiv">
+        <table id="infoTable">
+            <tr>
+                <th>Name</th>
+                <th></th>
+                <th>VaccineType</th>
+            </tr>
+            <tr>
+                <td id="nametd">-</td>
+                <td></td>
+                <td id="vaccinetd">-</td>
+            </tr>
+        </table>
+        <button id="cpBtn" onclick="copyLog()">
+            Copy Log
+        </button>
+    </div>
+    <div id="bottomdiv">
+        <p class="error">This is Error</p>
+        <p>
+            <p class="event">This is Event</p>
+            <p>ABCDEFGHIJKLMN</p>
+            <p>OPQRSTUVWXYZ</p>
+            <p>==================================================================</p>
+            <p class="error"><b>⚠️ WARNING ⚠️</b></p>
+            <p class="error">This is experimental project as Proof-of-Concept that Electron.js can be used automation tool.</p>
+            <p class="error">Responsibility of any disavantage by utilizing this project is all yours.</p>
+            <p>==================================================================</p>
+            <p class="error">이 프로젝트는 Electron을 자동화 도구로 사용할 수 있다는 아이디어의 구현체입니다.</p>
+            <p class="error">해당 프로젝트를 활용하여 발생하는 모든 불이익은 활용한 유저의 책임입니다.</p>
+            <p>==================================================================</p>
+        </p>
+    </div>
+</body>
