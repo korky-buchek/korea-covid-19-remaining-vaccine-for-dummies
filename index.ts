@@ -1,6 +1,6 @@
 import { exception } from "console";
 import { BrowserWindow, app, ipcMain , Session, BrowserView, OnBeforeRequestListenerDetails, WebContents} from "electron";
-import {Config, Paths, Console} from './utils';
+import {Config, Paths, GUIConsole} from './utils';
 import {KakaoRequest} from "./kakao";
 import {VaccineType} from "./types";
 import sound from "sound-play";
@@ -9,8 +9,10 @@ const isDev = process.env.ELECTRON_ENV == "development";
 
 let mainWindow : BrowserWindow;
 let session : Session | undefined;
+let popup : BrowserView | undefined;
+let reservationPopup : BrowserView | undefined;
 
-app.on("window-all-closed", () => app.quit());
+app.on("window-all-closed", () => app.quit())
 app.on("ready", async () => {
     mainWindow = new BrowserWindow({
         width: 800,
@@ -49,6 +51,13 @@ app.on("ready", async () => {
         }
     })
 
+    ipcMain.once("reservation-popup-ready", (evt) => {
+        reservationPopup!.webContents.send('here-is-info', [
+            Config.data.userName,
+            Config.data.type
+        ])
+    })
+
     ipcMain.once('coordinates-provides', () => {
         const filter = {urls:["*://vaccine-map.kakao.com/api/v3/vaccine/left_count_by_coords"]}
         const listener = (details : OnBeforeRequestListenerDetails, cb) => {
@@ -56,7 +65,6 @@ app.on("ready", async () => {
                 let postData = JSON.parse(details.uploadData[0].bytes.toString())
                 if (postData && postData.bottomRight){
                     console.log("[EVENT] Coordinate parsing successful")
-                    console.log(postData)
                     Config.setBottomRight(postData.bottomRight)
                     Config.setTopLeft(postData.topLeft)
                     createPopup()
@@ -73,7 +81,7 @@ app.on("ready", async () => {
 })
 
 function createPopup() {
-    let popup : BrowserView | null = new BrowserView({
+    popup = new BrowserView({
         webPreferences:{
             nodeIntegration: true,
             preload: path.resolve(`${Paths.utils}/popup.js`)
@@ -88,7 +96,7 @@ function createPopup() {
         Config.setVaccineType(type as VaccineType)
         mainWindow.setBrowserView(null)
         // Reservation Popup
-        let reservationPopup : BrowserView | null = new BrowserView({
+        reservationPopup = new BrowserView({
             webPreferences:{
                 nodeIntegration: true,
                 preload: path.resolve(`${Paths.utils}/reservation_preload.js`)
@@ -97,9 +105,8 @@ function createPopup() {
         mainWindow.setBrowserView(reservationPopup)
         reservationPopup!.webContents.loadFile(path.resolve(`${Paths.statics}/reservation.html`))
         reservationPopup!.setBounds({x:0, y:0, width: 800, height: 600})
-        reservationPopup!.setBackgroundColor("#00ffffff")
         if (isDev) reservationPopup!.webContents.openDevTools()
-        if(mainWindow.webContents.isDevToolsOpened())
+        if (mainWindow.webContents.isDevToolsOpened())
             mainWindow.webContents.closeDevTools()
 
         init_kakao()
@@ -107,23 +114,14 @@ function createPopup() {
 }
 
 async function init_kakao(){
-    let reservationPopup = mainWindow.getBrowserView()
     let wc : WebContents = reservationPopup!.webContents;
     try{
-        var userName = await KakaoRequest.load_user()
-        Config.setUserName(userName)
-        ipcMain.once("reservation-popup-ready", (evt) => {
-            reservationPopup!.webContents.send('here-is-info', [
-                Config.data.userName,
-                Config.data.type
-            ])
-        })
-        // do request
+        Config.setUserName(await KakaoRequest.load_user())
         sound.play(path.resolve(Paths.assets, 'start.mp3'))
         KakaoRequest.find_vaccine(wc)
     } catch (err){
         sound.play(path.resolve(Paths.assets, 'xylophon.mp3'))
-        Console.error(wc!, err)
+        GUIConsole.error(wc, err)
     }
 }
 
