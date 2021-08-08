@@ -1,13 +1,12 @@
 {
   "name": "korean-covid-19-remaining-vaccine-for-dummies",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "korean-covid-19-remaining-vaccine-for-dummies",
   "main": "build/index.js",
   "scripts": {
     "transpile": "tsc --build --clean && tsc --build --verbose",
-    "start-win": "npm run transpile && cross-env ELECTRON_ENV=development electron build/index.js",
-    "build-win": "npm run transpile && npx electron-builder",
-    "start-mac": "npm run transpile && cross-env ELECTRON_ENV=development electron build/index.js",
+    "start": "npm run transpile && cross-env ELECTRON_ENV=development electron build/index.js",
+    "build-win": "npm run transpile && npx electron-builder -- win",
     "build-mac": "npm run transpile && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --mac"
   },
   "repository": {
