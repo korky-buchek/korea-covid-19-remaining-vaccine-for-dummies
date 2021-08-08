@@ -1,8 +1,8 @@
 import { exception } from "console";
 import { BrowserWindow, app, ipcMain , Session, BrowserView, OnBeforeRequestListenerDetails, WebContents} from "electron";
-import {Config, Paths, GUIConsole} from './utils';
-import {KakaoRequest} from "./kakao";
-import {VaccineType} from "./types";
+import { Config, Paths, GUIConsole } from './utils';
+import { KakaoRequest } from "./kakao";
+import { VaccineType } from "./types";
 import sound from "sound-play";
 import path from 'path';
 const isDev = process.env.ELECTRON_ENV == "development";
@@ -27,8 +27,8 @@ const createViews = () => {
         }
     })
 }
-const loadPopup = () => {popup.setBounds({x: 0, y: 0, width:800, height: 600});popup.webContents.loadFile(path.resolve(`${Paths.statics}/vaccine.html`))}
-const loadSelect = () => {reservationPopup.setBounds({x:0, y:0, width: 800, height: 600});reservationPopup.webContents.loadFile(path.resolve(`${Paths.statics}/reservation.html`))}
+const showPopup = () => {popup.setBounds({x: 0, y: 0, width:800, height: 600});popup.webContents.loadFile(path.resolve(`${Paths.statics}/vaccine.html`));wc.send("popup-opened")}
+const showSelect = () => {reservationPopup.setBounds({x:0, y:0, width: 800, height: 600});reservationPopup.webContents.loadFile(path.resolve(`${Paths.statics}/reservation.html`))}
 
 app.on("window-all-closed", () => app.quit())
 app.on("ready", async () => {
@@ -44,8 +44,8 @@ app.on("ready", async () => {
         }
     })
     wc = mainWindow.webContents
+    session = wc.session
     wc.on("did-finish-load", ()=>{mainWindow.setTitle("korean-covid-19-remaining-vaccine-for-dummies")})
-    session = wc.session;
     await session.clearStorageData({storages: ["cookies"]})
     mainWindow.loadURL("https://accounts.kakao.com/login?continue=https%3A%2F%2Fvaccine-map.kakao.com%2Fmap2%3Fv%3D1");
     createViews()
@@ -53,20 +53,20 @@ app.on("ready", async () => {
 
 function createPopup() {
     mainWindow.setBrowserView(popup)
-    loadPopup()
-    mainWindow.webContents.send("popup-opened")
+    showPopup()
 }
 
 async function init_kakao(){
     try{
         sound.play(path.resolve(Paths.assets, 'start.mp3'))
-        KakaoRequest.find_vaccine(reservationPopup!.webContents)
+        KakaoRequest.find_vaccine(reservationPopup.webContents)
     } catch (err){
         sound.play(path.resolve(Paths.assets, 'xylophon.mp3'))
-        GUIConsole.error(reservationPopup!.webContents, err)
+        GUIConsole.error(reservationPopup.webContents, err)
     }
 }
 
+// #region IPC between Renderer
 ipcMain.on('ready-to-parse', async () => {
     try{
         let cookies = await session.cookies.get({domain: ".kakao.com"})
@@ -92,12 +92,10 @@ ipcMain.once("reservation-popup-ready", () => {
 ipcMain.once("popup-accepted", (evt, type)=>{
     Config.setVaccineType(type as VaccineType)
     mainWindow.setBrowserView(null)
-    // Reservation Popup
     mainWindow.setBrowserView(reservationPopup!)
-    loadSelect()
-    if (isDev) reservationPopup!.webContents.openDevTools()
-    if (mainWindow.webContents.isDevToolsOpened())
-        mainWindow.webContents.closeDevTools()
+    showSelect()
+    if (isDev) reservationPopup.webContents.openDevTools()
+    if (wc.isDevToolsOpened()) wc.closeDevTools()
 
     init_kakao()
 })
@@ -111,6 +109,7 @@ ipcMain.once('coordinates-provides', () => {
                 console.log("[EVENT] Coordinate parsing successful")
                 Config.setBottomRight(postData.bottomRight)
                 Config.setTopLeft(postData.topLeft)
+                console.log(Config.data.bottomRight, Config.data.TopLeft)
                 createPopup()
             } else {
                 throw new exception("can't resolve coordinate api response")
@@ -120,9 +119,9 @@ ipcMain.once('coordinates-provides', () => {
          }
          cb({})
     }
-    session?.webRequest.onBeforeRequest(filter, listener)
+    session.webRequest.onBeforeRequest(filter, listener)
 })
-
+// #endregion
 export default {
 
 }
